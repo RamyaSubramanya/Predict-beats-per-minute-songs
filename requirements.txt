@@ -1,7 +1,5 @@
-ipykernel
 pandas
 numpy
-seaborn
-matplotlib
 scikit-learn
-tensorflow
+joblib
+azureml-sdk
