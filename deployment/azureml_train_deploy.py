@@ -1,10 +1,22 @@
 # Step 1: Azure ML Environment Setup
 
 from azureml.core import Workspace, Environment
+import os
+import json
 
-# Connect to workspace
-ws = Workspace.from_config()  # Ensure config.json exists or pass parameters
+# # Connect to workspace ---- below is for vscode to azureml deployment
+# ws = Workspace.from_config()  # Ensure config.json exists or pass parameters
 
+# Get Azure credentials from environment variable via github secrets 
+# below is when you deploy from vscode on azureml via github 
+azure_creds = os.environ["AZURE_CREDENTIALS"]
+creds_dict = json.loads(azure_creds)
+# Connect to workspace using credentials
+ws = Workspace(
+    subscription_id=creds_dict["subscriptionId"],
+    resource_group=creds_dict["resourceGroup"],
+    workspace_name=creds_dict["workspaceName"]
+)
 # Create Azure ML environment
 env = Environment(name="bpm-env")
 env.python.conda_dependencies.add_pip_package("pandas")
