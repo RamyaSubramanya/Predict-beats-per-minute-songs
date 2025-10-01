@@ -11,6 +11,10 @@ on:
 jobs:
   train_and_deploy:
     runs-on: ubuntu-latest
+    env:
+      AZURE_CREDENTIALS: ${{ secrets.AZURE_CREDENTIALS }}
+      SCORING_URI: ${{ secrets.SCORING_URI }}
+      API_KEY: ${{ secrets.API_KEY }}
     steps:
     - name: Checkout repository
       uses: actions/checkout@v3
@@ -40,4 +44,7 @@ jobs:
 
     - name: Predict new songs (test)
       run: |
-        python scripts/automate_predictions.py --input data/test.csv --endpoint ${{ secrets.SCORING_URI }} --api_key ${{ secrets.API_KEY }}
+        export SCORING_URI=${{ secrets.SCORING_URI }}
+        export API_KEY=${{ secrets.API_KEY }}
+        python scripts/automate_predictions.py --input data/test.csv
+        

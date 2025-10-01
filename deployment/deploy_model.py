@@ -8,10 +8,12 @@ import json
 # ws = Workspace.from_config()
 
 # Use Azure login via secrets in GitHub Actions
-azure_creds = os.environ.get("AZURE_CREDENTIALS")
-if not azure_creds:
+if "AZURE_CREDENTIALS" not in os.environ:
     raise Exception("AZURE_CREDENTIALS not set as GitHub Secret")
-creds_dict = json.loads(azure_creds)
+
+creds_dict = json.loads(os.environ["AZURE_CREDENTIALS"])
+
+# Connect to Azure ML workspace
 ws = Workspace(
     subscription_id=creds_dict["subscriptionId"],
     resource_group=creds_dict["resourceGroup"],
