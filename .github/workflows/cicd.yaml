@@ -1,0 +1,43 @@
+name: BPM MLOps Pipeline
+
+on:
+  push:
+    branches:
+      - main
+  schedule:
+    # Every 5 minutes (for testing purposes)
+    - cron: "*/5 * * * *"
+
+jobs:
+  train_and_deploy:
+    runs-on: ubuntu-latest
+    steps:
+    - name: Checkout repository
+      uses: actions/checkout@v3
+
+    - name: Set up Python
+      uses: actions/setup-python@v4
+      with:
+        python-version: '3.10'
+
+    - name: Install dependencies
+      run: |
+        pip install -r requirements.txt
+        pip install azureml-core azureml-sdk pandas scikit-learn joblib requests
+
+    - name: Azure ML Login
+      uses: azure/login@v2
+      with:
+        creds: ${{ secrets.AZURE_CREDENTIALS }}
+
+    - name: Run training
+      run: |
+        python main.py --train-data-path data/train.csv --test-data-path data/test.csv
+
+    - name: Register & Deploy Model
+      run: |
+        python deployment/deploy_model.py
+
+    - name: Predict new songs (test)
+      run: |
+        python scripts/automate_predictions.py --input data/test.csv --endpoint ${{ secrets.SCORING_URI }} --api_key ${{ secrets.API_KEY }}
