@@ -1,9 +1,22 @@
 from azureml.core import Workspace, Model, Environment
 from azureml.core.webservice import AciWebservice, Webservice
 from azureml.core.model import InferenceConfig
+import os
+import json
 
-# Connect to workspace
-ws = Workspace.from_config()
+# # Connect to workspace for vs code to azure 
+# ws = Workspace.from_config()
+
+# Use Azure login via secrets in GitHub Actions
+azure_creds = os.environ.get("AZURE_CREDENTIALS")
+if not azure_creds:
+    raise Exception("AZURE_CREDENTIALS not set as GitHub Secret")
+creds_dict = json.loads(azure_creds)
+ws = Workspace(
+    subscription_id=creds_dict["subscriptionId"],
+    resource_group=creds_dict["resourceGroup"],
+    workspace_name=creds_dict["workspaceName"]
+)
 
 # Get the registered model
 model = Model(ws, name="bpm_model")
