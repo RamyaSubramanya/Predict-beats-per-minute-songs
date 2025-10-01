@@ -1,0 +1,24 @@
+# Ignore local data since it's already uploaded
+data/
+*.csv
+*.zip
+
+# Ignore git and python cache
+.git
+
+# Ignore virtual environments
+venv/
+.env/
+__pycache__/
+*.pyc
+
+# Ignore outputs folder
+outputs
+
+# Ignore local datasets if not needed
+data/*.csv
+
+# Ignore Jupyter checkpoints
+**/.ipynb_checkpoints
+# Ignore large temp files
+*.log

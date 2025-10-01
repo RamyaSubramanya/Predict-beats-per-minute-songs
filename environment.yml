@@ -7,4 +7,5 @@ dependencies:
   - joblib
   - pip
   - pip:
-      - azureml-sdk
+      - azureml-core
+      - azureml-defaults

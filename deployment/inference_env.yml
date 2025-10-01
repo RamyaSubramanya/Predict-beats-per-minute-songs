@@ -1,0 +1,12 @@
+name: bpm_inference_env
+dependencies:
+  - python=3.10.10
+  - pandas
+  - numpy
+  - scikit-learn
+  - joblib
+  - pip
+  - pip:
+      - azureml-core
+      - azureml-defaults
+
