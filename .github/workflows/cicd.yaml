@@ -4,9 +4,9 @@ on:
   push:
     branches:
       - main
-  schedule:
-    # Every 5 minutes (for testing purposes)
-    - cron: "*/5 * * * *"
+  # schedule:
+  #   # Every 5 minutes (for testing purposes)
+  #   - cron: "*/5 * * * *"
 
 jobs:
   train_and_deploy:
@@ -46,5 +46,5 @@ jobs:
       run: |
         export SCORING_URI=${{ secrets.SCORING_URI }}
         export API_KEY=${{ secrets.API_KEY }}
-        python scripts/automate_predictions.py --input scripts/automate_predictions_test_data.csv.csv
+        python scripts/automate_predictions.py --input scripts/automate_predictions_test_data.csv
         
