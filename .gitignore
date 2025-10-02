@@ -6,6 +6,9 @@ outputs/
 test_model.py
 test_endpoint.py
 
+#ignore configuration files
+config.json
+
 # Ignore Python cache and temp files, env files
 __pycache__/
 *.pyc
