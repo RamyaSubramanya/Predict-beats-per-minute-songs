@@ -30,7 +30,7 @@ env.register(workspace=ws)
 print(f"Environment '{env.name}' registered successfully.")
 
 # -----------------------------------------------------------------------------------------------
-# Step 2: upload datasets
+# Step 2: upload datasets onto AzureML
 
 from azureml.core import Workspace, Datastore, Dataset
 
@@ -67,7 +67,7 @@ test_dataset = test_dataset.register(
 print("FileDatasets uploaded and registered successfully!")
 
 # -----------------------------------------------------------------------------------------------
-# step3: Training Submit Script
+# step3: Submit training job
 
 from azureml.core import Workspace, Experiment, Environment, ScriptRunConfig
 from azureml.core.compute import AmlCompute, ComputeTarget
