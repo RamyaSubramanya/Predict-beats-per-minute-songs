@@ -5,8 +5,7 @@ on:
     branches:
       - main
   # schedule:
-  #   # Every 5 minutes (for testing purposes)
-  #   - cron: "*/5 * * * *"
+  #   - cron: "*/5 * * * *"  # Uncomment if you want periodic runs
 
 jobs:
   train_and_deploy:
@@ -15,6 +14,7 @@ jobs:
       AZURE_CREDENTIALS: ${{ secrets.AZURE_CREDENTIALS }}
       SCORING_URI: ${{ secrets.SCORING_URI }}
       API_KEY: ${{ secrets.API_KEY }}
+      better_model: "false" 
     steps:
     - name: Checkout repository
       uses: actions/checkout@v3
@@ -27,13 +27,13 @@ jobs:
     - name: Install dependencies
       run: |
         pip install -r requirements.txt
-        pip install azureml-core azureml-sdk pandas scikit-learn joblib requests
+        pip install azureml-core azureml-sdk pandas scikit-learn joblib requests jq
 
     - name: Azure ML Login
       uses: azure/login@v2
       with:
         creds: ${{ secrets.AZURE_CREDENTIALS }}
-          
+
       # Step1: Training locally
     - name: Run training
       run: |
@@ -44,15 +44,32 @@ jobs:
       run: |
         python deployment/azureml_train_deploy.py
 
-      # Step3: Deploy model
-    - name: Deploy Model
+      # Step3: Evaluate model performance
+    - name: Evaluate Metrics
+      id: eval_metrics
       run: |
+        python scripts/evaluate_model.py --metrics_file outputs/metrics.json --deployment_file deployment/deployment_output.json
+        NEW_MAE=$(jq -r '.new_mae' deployment/evaluate_metrics.json)
+        CURRENT_MAE=$(jq -r '.current_mae' deployment/evaluate_metrics.json)
+        echo "New MAE: $NEW_MAE"
+        echo "Current MAE: $CURRENT_MAE"
+        if (( $(echo "$NEW_MAE < $CURRENT_MAE" | bc -l) )); then
+          echo "better_model=true" >> $GITHUB_ENV
+        else
+          echo "better_model=false" >> $GITHUB_ENV
+        fi
+
+      # Step4: Deploy model only if new is better
+    - name: Deploy Model
+      if: env.better_model == 'true'
+      run: |
+        echo "Deploying new model..."
         python deployment/deploy_model.py
-      
-      # Step 4: Run test predictions (optional)  
+
+      # Step5: Run test predictions (optional)
     - name: Predict new songs (test)
+      if: env.better_model == 'true'
       run: |
         SCORING_URI=$(jq -r '.scoring_uri' deployment/deployment_output.json)
         API_KEY=$(jq -r '.api_key' deployment/deployment_output.json)
         python scripts/automate_predictions.py --input scripts/automate_predictions_test_data.csv --endpoint $SCORING_URI --api_key $API_KEY
-        
