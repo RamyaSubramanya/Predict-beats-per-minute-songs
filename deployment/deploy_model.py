@@ -61,4 +61,17 @@ print(service.get_logs())
 print(f"Service state: {service.state}")
 print(f"Scoring URI: {service.scoring_uri}")
 if service.auth_enabled:
-    print(f"API key: {service.get_keys()[0]}")
+    api_key = service.get_keys()[0]
+    print(f"API key: {api_key}")
+else:
+    api_key = None
+
+# Save dynamic values
+output = {
+    "scoring_uri": service.scoring_uri,
+    "api_key": api_key
+}
+with open("deployment/deployment_output.json", "w") as f:
+    json.dump(output, f)
+
+print("Deployment outputs saved to deployment/deployment_output.json")

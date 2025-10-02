@@ -1,8 +1,6 @@
 # Ignore outputs and local artifacts
 outputs/
 *.pkl
-*.json
-
 
 # Ignore local test scripts
 test_model.py

@@ -52,7 +52,7 @@ jobs:
       # Step 4: Run test predictions (optional)  
     - name: Predict new songs (test)
       run: |
-        export SCORING_URI=${{ secrets.SCORING_URI }}
-        export API_KEY=${{ secrets.API_KEY }}
-        python scripts/automate_predictions.py --input scripts/automate_predictions_test_data.csv
+        SCORING_URI=$(jq -r '.scoring_uri' deployment/deployment_output.json)
+        API_KEY=$(jq -r '.api_key' deployment/deployment_output.json)
+        python scripts/automate_predictions.py --input scripts/automate_predictions_test_data.csv --endpoint $SCORING_URI --api_key $API_KEY
         
